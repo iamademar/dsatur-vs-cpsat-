@@ -117,29 +117,76 @@ within its 20 s budget, not a proven optimum (on the two instances CP-SAT
 
 ## Setup
 
-`cpsat.py` needs Google OR-Tools, whose wheels currently support **Python
-3.10–3.13** (not yet 3.14). Create a virtual environment with a supported
-interpreter:
+**1. Get the code.**
 
 ```bash
-python3.12 -m venv .venv          # any of 3.10 / 3.11 / 3.12 / 3.13 works
-source .venv/bin/activate
+git clone https://github.com/iamademar/dsatur-vs-cpsat.git
+cd dsatur-vs-cpsat
+```
+
+**2. Create a virtual environment and install the dependencies.**
+
+Only the CP-SAT path needs this. `cpsat.py` uses Google OR-Tools, whose wheels
+currently support **Python 3.11–3.13** (not yet 3.14), so create the venv with a
+supported interpreter:
+
+```bash
+python3.12 -m venv .venv          # Python 3.11, 3.12, or 3.13
+source .venv/bin/activate         # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
 `dsatur.py` and `graphutils.py` are pure standard library and run on any
-Python 3, including 3.14 — only the CP-SAT path needs the venv.
+Python 3 (including 3.14) with no install — if you only want DSATUR, you can
+skip the venv entirely.
 
 ## Running
 
-Each method file runs standalone on one dataset:
+### Run a single method on one dataset
+
+Both method scripts take a dataset CSV as their one argument and default to
+`datasets/tiny/enrolments.csv` if you omit it. Any of the five
+`datasets/<name>/enrolments.csv` paths works (`tiny`, `small`, `medium`,
+`dense`, `large`).
+
+**DSATUR** (no install needed):
 
 ```bash
 python dsatur.py datasets/tiny/enrolments.csv
-python cpsat.py  datasets/dense/enrolments.csv
 ```
 
-The full algorithm comparison is the notebook:
+```text
+dataset:        datasets/tiny/enrolments.csv
+vertices:       15
+colours used:   14
+valid:          True
+```
+
+**CP-SAT** (needs the activated venv). It warm-starts from DSATUR internally and
+runs with a 20-second cap:
+
+```bash
+python cpsat.py datasets/dense/enrolments.csv
+```
+
+```text
+dataset:        datasets/dense/enrolments.csv
+vertices:       60
+DSATUR colours: 51
+CP-SAT colours: 51
+status:         OPTIMAL
+proven optimal: True
+wall time (s):  0.111
+valid:          True
+```
+
+(`dense` self-certifies in a fraction of a second, so `proven optimal: True`.
+Instances like `small`, `medium`, and `large` run to the 20 s cap and report
+`proven optimal: False`.)
+
+### Run the full comparison (notebook)
+
+The complete benchmark across all five datasets is the notebook:
 
 ```bash
 jupyter notebook notebook/comparison.ipynb
@@ -147,22 +194,38 @@ jupyter notebook notebook/comparison.ipynb
 
 Run all cells top to bottom. It loads the five datasets, runs DSATUR then
 CP-SAT (warm-started from DSATUR, 20 s cap each), prints the results table,
-draws the colours-used and runtime charts, and validates every colouring.
+draws the colours-used and runtime charts, and validates every colouring —
+reproducing the Results table above.
 
 ## Reproducing the AI comparison (Method 3)
 
 Give an AI assistant the same `enrolments.csv` and the rule "two exams that
 share a student cannot share a slot; use as few slots as possible". Save its
-JSON answer (a map from exam ID to integer slot) and score it:
+JSON answer (a map from exam ID to integer slot) and score it with:
 
 ```bash
+python check_ai.py <scenario> <ai_answer.json>
+# e.g.
 python check_ai.py tiny ai_tiny.json
 ```
 
-`check_ai.py` reports validity, coverage (whether every exam was assigned),
-colours used, and the gap to the clique lower bound — never trusting the
-assistant's self-reported validity. The five `ai_*.json` files are the answers
-used in the report.
+`<scenario>` is a dataset name (`tiny`, `small`, …), which `check_ai.py`
+resolves to `datasets/<scenario>/enrolments.csv`. It reports coverage (whether
+every exam was assigned), validity, colours used, and the gap to the clique
+lower bound — never trusting the assistant's self-reported validity:
+
+```text
+instance       : tiny
+exams covered  : 15/15
+valid (proper) : True
+colours used   : 14
+clique LB      : 14   (AI gap to LB = 0)
+
+VERDICT: proper timetable -- compare 'colours used' to the DSATUR/CP-SAT columns in the Results table.
+```
+
+The five committed `ai_{tiny,small,medium,dense,large}.json` files are the
+answers used in the report.
 
 ## Notes
 
