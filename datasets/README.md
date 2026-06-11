@@ -101,7 +101,7 @@ and project papers. The generator mirrors that:
 | 200-level      | 30–80        | moderate — clusters within a major                              |
 | 300-level      | 15–40        | strong within a major, weak across departments                  |
 | 400-level      | 5–15         | very strong with sibling 4xx papers (honours cohort)            |
-| 500-level      | 1–3          | often isolated; produces the deg=0 vertices used in §4.1.2     |
+| 500-level      | 1–3          | often isolated; produces the deg=0 vertices used in the realistic DSATUR example (isolated exams / slot budget) |
 
 Students have a "primary department" and a "primary level", and their enrolment is
 biased toward papers in that bucket plus 1–2 cross-department fillers (typically
@@ -111,21 +111,20 @@ introductory papers, the closest real-world analogue of general-education load).
 
 | Scenario | Exams | Students | Departments | Approx |E| | Approx density | Intent                              |
 |----------|-------|----------|-------------|------------|----------------|-------------------------------------|
-| `tiny`   | 15    | 50       | 2           | ~100       | ~0.95          | hand-inspectable; almost-complete    |
+| `tiny`   | 15    | 45       | 2           | ~100       | ~0.95          | hand-inspectable; almost-complete    |
 | `small`  | 40    | 250      | 3           | ~660       | ~0.84          | one full undergraduate programme    |
 | `medium` | 100   | 700      | 4           | ~3300      | ~0.67          | two faculties' worth                |
 | `dense`  | 60    | 400      | 2           | ~1750      | ~0.99          | worst-case constrained exam week    |
 | `large`  | 250   | 3000     | 6           | ~14400     | ~0.46          | university-scale, long tail of 5xx  |
 
-The vertex counts and ballpark densities target Table 4 in §9 of the report
-(`tab:prelim`), but the generator's randomness means exact edge counts vary by a few
-percent across regenerations. The README's numbers are honest descriptions of *these*
-committed CSVs, not the generator's eventual mean.
+The vertex counts and ballpark densities target the benchmark results table in the
+report's Results section (`tab:prelim`), but the generator's randomness means exact
+edge counts vary by a few percent across regenerations. The README's numbers are
+honest descriptions of *these* committed CSVs, not the generator's eventual mean.
 
 ## Reproducibility
 
 These CSVs were generated with a per-scenario seed derived from the scenario name plus a
-fixed offset. Re-running the (currently uncommitted) generator on the same code produces
-byte-identical files. The generator script itself is expected to be committed later as
-part of `code/examcolor.py` per the §10 implementation plan; until then, treat the
-committed CSVs as the source of truth.
+fixed offset. Re-running the generator on the same code produces byte-identical files.
+The generator script itself is currently uncommitted, so treat the committed CSVs as the
+source of truth.

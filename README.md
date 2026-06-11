@@ -69,15 +69,19 @@ warm-started from DSATUR). **Colours** = slots used; **t(s)** = runtime;
 
 | instance | exams | edges | DSATUR | t(s) | CP-SAT | t(s) | opt |
 |---|---:|---:|---:|---:|---:|---:|:--:|
-| tiny   | 15  | 100   | 14 | 0.000 | 14 | 0.03  | Y |
-| small  | 40  | 659   | 25 | 0.000 | 25 | 20.04 | N |
-| medium | 100 | 3,303 | 30 | 0.002 | 28 | 20.02 | N |
-| dense  | 60  | 1,755 | 51 | 0.000 | 51 | 0.11  | Y |
-| large  | 250 | 14,404| 46 | 0.005 | 45 | 20.04 | N |
+| tiny   | 15  | 100   | 14 | <0.001 | 14 | 0.03  | Y |
+| small  | 40  | 659   | 25 | <0.001 | 25 | 20.04 | N |
+| medium | 100 | 3,303 | 30 | 0.002  | 28 | 20.02 | N |
+| dense  | 60  | 1,755 | 51 | <0.001 | 51 | 0.11  | Y |
+| large  | 250 | 14,404| 46 | 0.005  | 44 | 20.04 | N |
 
 DSATUR colours every instance in milliseconds; CP-SAT either finishes instantly
-(when it can prove optimality — `tiny`, `dense`, where a clique pins the bound)
-or runs to the cap. The colour counts are always within two slots of each other.
+(when it self-certifies optimality — `tiny`, `dense`, where a clique pins the
+bound) or runs to the cap. The `opt` column above records solver
+self-certification; `small` reads `N` even though its 25 is independently known
+to be optimal from the same clique lower bound — CP-SAT just could not lift its
+own bound to meet it within 20 s. The colour counts are always within two slots
+of each other.
 
 ### AI assistant (Method 3)
 
@@ -91,7 +95,7 @@ non-deterministic sample**, not a repeated measurement.
 | small  | 25 | 25 | 25 | ✓ | 40/40  |
 | medium | 30 | 28 | **27** | ✓ | 100/100 |
 | dense  | 51 | 51 | 51 | ✓ | 60/60  |
-| large  | 46 | 45 | **43** | ✓ | 250/250 |
+| large  | 46 | 44 | **43** | ✓ | 250/250 |
 
 The assistant produced valid, complete timetables on all five instances, matched
 the best result on three, and used *fewer* slots than both algorithms on
